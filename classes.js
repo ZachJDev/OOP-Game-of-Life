@@ -4,6 +4,7 @@ class Board {
     this.width = width;
     this.height = height;
     this.cellSize = cellSize;
+    this.startingNodes = startingNodes
     this.resetNodes()
     this.createRandomNodes(startingNodes);
     this.drawBoard();
@@ -150,7 +151,8 @@ class Node {
 class Controls {
   constructor(board, genLength = 90) {
     this.pauseButton = document.querySelector("#pause");
-    this.clearButton = document.querySelector("#clear")
+    this.clearButton = document.querySelector("#clear");
+    this.randomButton = document.querySelector('#random')
     this.running = false;
     this.timer;
     this.board = board;
@@ -158,6 +160,7 @@ class Controls {
 
     this.initPauseButton();
     this.initClearButton();
+    this.initRandomButton();
   }
   initPauseButton() {
     this.pauseButton.addEventListener("click", () => {
@@ -191,6 +194,16 @@ class Controls {
       this.running = false;
       this.updateButtonText();
       clearInterval(this.timer)
+    })
+  }
+  initRandomButton() {
+    this.randomButton.addEventListener("click", () => {
+      this.board.resetNodes();
+      this.board.clear();
+      this.board.createRandomNodes(this.board.startingNodes)
+      this.board.drawBoard();
+      this.board.drawNodes();
+      console.log(this.board.nodes)
     })
   }
 }
