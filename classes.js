@@ -1,17 +1,14 @@
 class Board {
   constructor(width, height, cellSize, startingNodes = 60) {
+    this.canvas = document.querySelector("canvas")
     this.width = width;
     this.height = height;
     this.cellSize = cellSize;
-    this.nodes = Array.from({ length: this.width / this.cellSize }, (v, x) => {
-      return Array.from(
-        { length: this.height / this.cellSize },
-        (v, y) => new Node(x, y, this.cellSize, this.cellSize)
-      );
-    });
+    this.resetNodes()
     this.createRandomNodes(startingNodes);
     this.drawBoard();
     this.drawNodes();
+    this.addNodeListener();
   }
 
   drawBoard() {
@@ -45,6 +42,14 @@ class Board {
     });
   }
 
+  resetNodes() {
+    this.nodes = Array.from({ length: this.width / this.cellSize }, (v, x) => {
+      return Array.from(
+        { length: this.height / this.cellSize },
+        (v, y) => new Node(x, y, this.cellSize, this.cellSize)
+      );
+    });
+  }
   checkSurroundings(node) {
     let x = node.x;
     let y = node.y;
@@ -76,19 +81,20 @@ class Board {
     });
     return newNodes;
   }
+
   updateBoard() {
     this.nodes = this.generateNewNodes();
     this.clear();
     this.drawBoard();
     this.drawNodes();
   }
+
   createRandomNodes(num) {
     function getRandomInt(max) {
       return Math.floor(Math.random() * Math.floor(max));
     }
     let maxYCoordinate = this.height / this.cellSize;
     let maxXCoordinate = this.width / this.cellSize;
-    // console.log(MaxXCoordinate);
 
     for (let i = 0; i < num; i++) {
       this.nodes[getRandomInt(maxXCoordinate)][
@@ -96,6 +102,21 @@ class Board {
       ].giveLife();
     }
   }
+
+  addNodeListener() {
+    this.canvas.addEventListener("click", (event) => {
+      let x = Math.floor(event.x/this.cellSize);
+      let y = Math.floor(event.y /this.cellSize);
+      let node =this.nodes[x - 1][y - 1]
+      if(!node.alive) {this.createNode(x - 1, y - 1)}
+      else node.takeLife();
+      this.clear();
+      this.drawBoard();
+      this.drawNodes();
+      
+    })
+  }
+
   clear() {
     ctx.clearRect(0, 0, this.width, this.height);
   }
@@ -126,15 +147,20 @@ class Node {
   }
 }
 
-class Timer {
-  constructor() {
-    this.button = document.querySelector("#pause");
+class Controls {
+  constructor(board, genLength = 90) {
+    this.pauseButton = document.querySelector("#pause");
+    this.clearButton = document.querySelector("#clear")
     this.running = false;
     this.timer;
-    this.initButton();
+    this.board = board;
+    this.genLength = genLength;
+
+    this.initPauseButton();
+    this.initClearButton();
   }
-  initButton() {
-    this.button.addEventListener("click", () => {
+  initPauseButton() {
+    this.pauseButton.addEventListener("click", () => {
       if (this.running) {
         clearInterval(this.timer);
         this.running = false;
@@ -148,13 +174,23 @@ class Timer {
   startTimer() {
     this.timer = setInterval(() => {
       board.updateBoard();
-    }, 90);
+    }, this.genLength);
   }
   updateButtonText() {
     if(this.running) {
-      this.button.textContent = "Stop"
+      this.pauseButton.textContent = "Stop"
     } else {
-      this.button.textContent = "Start"
+      this.pauseButton.textContent = "Start"
     }
+  }
+  initClearButton() {
+    this.clearButton.addEventListener("click", () => {
+      this.board.resetNodes();
+      this.board.clear();
+      this.board.drawBoard()
+      this.running = false;
+      this.updateButtonText();
+      clearInterval(this.timer)
+    })
   }
 }
