@@ -10,7 +10,8 @@ class Board {
       );
     });
     this.createRandomNodes(startingNodes);
-    console.log(this.nodes)
+    this.drawBoard();
+    this.drawNodes();
   }
 
   drawBoard() {
@@ -85,8 +86,8 @@ class Board {
     function getRandomInt(max) {
       return Math.floor(Math.random() * Math.floor(max));
     }
-    let maxYCoordinate = this.height / this.cellSize - 1;
-    let maxXCoordinate = this.width / this.cellSize - 1;
+    let maxYCoordinate = this.height / this.cellSize;
+    let maxXCoordinate = this.width / this.cellSize;
     // console.log(MaxXCoordinate);
 
     for (let i = 0; i < num; i++) {
@@ -122,5 +123,38 @@ class Node {
   }
   draw() {
     ctx.fillRect(this.drawX, this.drawY, this.width, this.height);
+  }
+}
+
+class Timer {
+  constructor() {
+    this.button = document.querySelector("#pause");
+    this.running = false;
+    this.timer;
+    this.initButton();
+  }
+  initButton() {
+    this.button.addEventListener("click", () => {
+      if (this.running) {
+        clearInterval(this.timer);
+        this.running = false;
+      } else {
+        this.startTimer();
+        this.running = true;
+      }
+      this.updateButtonText()
+    });
+  }
+  startTimer() {
+    this.timer = setInterval(() => {
+      board.updateBoard();
+    }, 90);
+  }
+  updateButtonText() {
+    if(this.running) {
+      this.button.textContent = "Stop"
+    } else {
+      this.button.textContent = "Start"
+    }
   }
 }
