@@ -2,7 +2,7 @@
 // Should probably split these buttons into their
 // Own objects, Maybe inheriting from Control...
 class Controls {
-    constructor(board, genLength = 300) {
+    constructor(board, genLength = 250) {
       this.pauseButton = document.querySelector("#pause");
       this.clearButton = document.querySelector("#clear");
       this.randomButton = document.querySelector("#random");

@@ -1,5 +1,5 @@
 class Board {
-  constructor(width, height, cellSize, startingNodes = 60, grid = false) {
+  constructor(width, height, cellSize, startingNodes = 60, grid = true) {
     this.canvas = document.querySelector("canvas");
     this.width = width;
     this.height = height;
@@ -107,7 +107,7 @@ class Board {
   }
   computeOffset() {
       // Eh, it works....
-    return Number(window.getComputedStyle(this.canvas).marginLeft.split("px")[0]);
+    return Number(window.getComputedStyle(document.querySelector("#rules")).width.split("px")[0]);
   }
 
   addNodeListener() {

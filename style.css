@@ -2,6 +2,16 @@ body {
     background-color: rgb(220, 220, 220);
 }
 
-canvas {
-    margin-left:25%;
+#everything {
+    display: flex;
+}
+
+#controls {
+    display: flex;
+    flex-direction: column;
+}
+button, input{
+    padding:  10px 50px;
+     margin-bottom: 2rem;
+     margin-left: 20px;
 }
