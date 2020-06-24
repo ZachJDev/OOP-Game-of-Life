@@ -6,6 +6,7 @@ class Board {
     this.cellSize = cellSize;
     this.startingNodes = startingNodes;
     this.grid = grid;
+    this.mouseOffset = this.computeOffset();
   }
   createNode(x, y) {
     this.nodes[x][y].giveLife();
@@ -45,7 +46,7 @@ class Board {
     this.nodes = Array.from({ length: this.width / this.cellSize }, (v, x) => {
       return Array.from(
         { length: this.height / this.cellSize },
-        (v, y) => new Node(x, y, this.cellSize, this.cellSize)
+        (v, y) => new Cell(x, y, this.cellSize, this.cellSize)
       );
     });
   }
@@ -70,7 +71,7 @@ class Board {
     this.nodes.forEach((row) => {
       row.forEach((node) => {
         let surroundingNodes = this.checkSurroundings(node);
-        let newNode = new Node(
+        let newNode = new Cell(
           node.x,
           node.y,
           this.cellSize,
@@ -104,10 +105,14 @@ class Board {
       ].giveLife();
     }
   }
+  computeOffset() {
+      // Eh, it works....
+    return Number(window.getComputedStyle(this.canvas).marginLeft.split("px")[0]);
+  }
 
   addNodeListener() {
     this.canvas.addEventListener("click", (event) => {
-      let x = Math.floor(event.x / this.cellSize);
+      let x = Math.floor((event.x - this.mouseOffset)/ this.cellSize);
       let y = Math.floor(event.y / this.cellSize);
       let node = this.nodes[x - 1][y - 1];
       if (!node.alive) {

@@ -1,4 +1,4 @@
-class Node {
+class Cell {
     constructor(x, y, width, height, monochrome = true) {
       this.x = x;
       this.y = y;
@@ -38,4 +38,4 @@ class Node {
     }
   }
   
-  Node.prototype.colors = ["black", "green", "red", "blue", "purple"];
+  Cell.prototype.colors = ["black", "green", "red", "blue", "purple"];
