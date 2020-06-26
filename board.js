@@ -1,3 +1,8 @@
+
+// Again, Some obviously bad OOP in here.
+// I will need to extract some of this and 
+// Make a Mouse object next, I think.
+
 class Board {
   constructor(width, height, cellSize, startingNodes = 60, grid = true) {
     this.canvas = document.querySelector("canvas");
@@ -6,7 +11,8 @@ class Board {
     this.cellSize = cellSize;
     this.startingNodes = startingNodes;
     this.grid = grid;
-    this.mouseOffset = this.computeOffset();
+    this.prevX = 0;
+    this.prevY = 0;
   }
   createNode(x, y) {
     this.nodes[x][y].giveLife();
@@ -106,25 +112,37 @@ class Board {
     }
   }
   computeOffset() {
-      // Eh, it works....
+      // Eh, it works....  Annnnd it's pointless.
     return Number(window.getComputedStyle(document.querySelector("#rules")).width.split("px")[0]);
   }
 
   addNodeListener() {
-    this.canvas.addEventListener("click", (event) => {
-      let x = Math.floor((event.x - this.mouseOffset)/ this.cellSize);
-      let y = Math.floor(event.y / this.cellSize);
-      let node = this.nodes[x - 1][y - 1];
-      if (!node.alive) {
-        this.createNode(x - 1, y - 1);
-      } else node.takeLife();
-      this.clear();
-      this.draw();
+    this.canvas.addEventListener("mousemove", (event) => {
+      
+      if(event.buttons == 0 ) return
+      let x = Math.floor(event.offsetX/ this.cellSize)
+      let y = Math.floor(event.offsetY / this.cellSize)
+        if(x != this.prevX || y != this.prevY) {
+          this.prevX = x;
+          this.prevY = y;
+          this.traceNodes(event)
+        }
     });
+    this.canvas.addEventListener("mousedown", this.traceNodes);
   }
 
   turnOffGrid() {
     this.grid = false;
+  }
+  traceNodes = (event) => {
+    let x = Math.floor(event.offsetX / this.cellSize)
+    let y = Math.floor(event.offsetY / this.cellSize)
+    let node = this.nodes[x][y];
+          if (!node.alive) {
+            this.createNode(x, y);
+          } else node.takeLife();
+          this.clear();
+          this.draw();
   }
 
   init() {
