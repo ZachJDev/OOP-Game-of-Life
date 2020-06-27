@@ -1,8 +1,3 @@
-
-// Again, Some obviously bad OOP in here.
-// I will need to extract some of this and 
-// Make a Mouse object next, I think.
-
 class Board {
   constructor(width, height, cellSize, startingNodes = 60, grid = true) {
     this.canvas = document.querySelector("canvas");
@@ -11,8 +6,9 @@ class Board {
     this.cellSize = cellSize;
     this.startingNodes = startingNodes;
     this.grid = grid;
-    this.prevX = 0;
-    this.prevY = 0;
+
+    this.mouse = new Mouse(this);
+    this.lastDrawn = null;
   }
   createNode(x, y) {
     this.nodes[x][y].giveLife();
@@ -111,45 +107,38 @@ class Board {
       ].giveLife();
     }
   }
-  computeOffset() {
-      // Eh, it works....  Annnnd it's pointless.
-    return Number(window.getComputedStyle(document.querySelector("#rules")).width.split("px")[0]);
-  }
-
-  addNodeListener() {
-    this.canvas.addEventListener("mousemove", (event) => {
-      
-      if(event.buttons == 0 ) return
-      let x = Math.floor(event.offsetX/ this.cellSize)
-      let y = Math.floor(event.offsetY / this.cellSize)
-        if(x != this.prevX || y != this.prevY) {
-          this.prevX = x;
-          this.prevY = y;
-          this.traceNodes(event)
-        }
-    });
-    this.canvas.addEventListener("mousedown", this.traceNodes);
-  }
 
   turnOffGrid() {
     this.grid = false;
   }
-  traceNodes = (event) => {
-    let x = Math.floor(event.offsetX / this.cellSize)
-    let y = Math.floor(event.offsetY / this.cellSize)
+  traceNode = (x, y) => {
+    try {
+    // This stops TypeErrors if the event is fired and the x value is too large.
+    if(x >= (this.width / this.cellSize)) x = (this.width / this.cellSize) - 1
+      
     let node = this.nodes[x][y];
-          if (!node.alive) {
-            this.createNode(x, y);
-          } else node.takeLife();
-          this.clear();
-          this.draw();
+
+    // lastDrawn stops the mouseMove event from toggling
+    // The same node twice or from toggling something called by the
+    // Mousedown event. This has the unintended consequence of making
+    // It impossible to delete the last node drawn. Unfortunately the
+    // Things I've tried to mitigate this have been extremely non-performant.
+
+    if (node != this.lastDrawn) {
+      node.toggleLife();
+      this.clear();
+      this.draw();
+      this.lastDrawn = node;
+    }
+  } catch(e) {
+    // Nothing.
   }
+  };
 
   init() {
     this.resetNodes();
     this.createRandomNodes(this.startingNodes);
     this.draw();
-    this.addNodeListener();
   }
 
   clear() {

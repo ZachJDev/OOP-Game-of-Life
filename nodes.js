@@ -8,12 +8,14 @@ class Cell {
       this.generation = 0;
       this.monochrome = monochrome;
     }
+    toggleLife() {
+      this.alive = !this.alive;
+    }
     giveLife() {
       this.alive = true;
     }
     takeLife() {
       this.alive = false;
-      this.generation = 0;
     }
     survives(num) {
       this.giveLife();
